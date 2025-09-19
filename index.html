@@ -55,20 +55,8 @@
   </div>
 
   <script>
-    const tg = window.Telegram?.WebApp;
-    if (tg) {
-      // Applique le thème Telegram (clair/sombre)
-      const t = tg.themeParams || {};
-      const pick = (v,d)=> v ?? d;
-      document.documentElement.style.setProperty('--bg',  pick(t.bg_color, '#ffffff'));
-      document.documentElement.style.setProperty('--fg',  pick(t.text_color, '#111111'));
-      document.documentElement.style.setProperty('--card',pick(t.secondary_bg_color, '#f2f2f2'));
-      document.documentElement.style.setProperty('--btn', pick(t.button_color, '#e9e9e9'));
-      tg.expand(); 
-      tg.ready();
-    }
+    const BOT_USERNAME = "BinderKbot"; // ⚠️ remplace par ton vrai @Bot (sans @)
 
-    // Commandes exactes
     const GENERAL = ["All","Off","Face","Spot","Wash","Wave","Strob","Mole"];
     const PELLE   = ["Pelle face","Pelle spot","Pelle wash","Pelle wave","Pelle strob"];
 
@@ -78,9 +66,16 @@
         const b = document.createElement('button');
         b.textContent = txt;
         b.onclick = () => {
-          b.disabled = true; // anti double-clic
-          if (tg?.sendData) tg.sendData(txt);
-          setTimeout(()=> b.disabled = false, 300);
+          b.disabled = true;
+          // Ouvre le lien t.me qui enverra /start <commande>
+          const payload = encodeURIComponent(txt);
+          const url = `https://t.me/${BOT_USERNAME}?start=${payload}`;
+          if (window.Telegram?.WebApp) {
+            Telegram.WebApp.openTelegramLink(url);
+          } else {
+            window.open(url, "_blank"); // fallback hors Telegram
+          }
+          setTimeout(()=> b.disabled = false, 400);
         };
         el.appendChild(b);
       });
